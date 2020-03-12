@@ -16,16 +16,12 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  db.Museum.find({ name: req.body.name })
+  //Remove any keys that have no value
+  Object.keys(req.body).forEach((key) => (req.body[key] == '') && delete req.body[key]);
+  
+  db.Museum.create(req.body)
   .then(museum => {
-    if (museum) {
-      res.send({ message: 'Museum already exists', err });
-    } else {
-      db.Museum.create(req.body)
-      .then(museum => {
-        res.redirect(`/museums/${museum._id}`);
-      }).catch(err=>res.send({ message: 'Error creating museum', err }));
-    }
+    res.redirect(`/museums/${museum._id}`);
   }).catch(err=>res.send({ message: 'Error encountered when creating museum', err }));
 })
 
